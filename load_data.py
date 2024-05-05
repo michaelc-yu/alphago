@@ -5,9 +5,10 @@ import torch.nn.functional as F
 import numpy as np
 from sgfmill import sgf
 import copy
+import os
 
 import go
-
+import extract_features
 
 # for each move in each sgf file
 # we want the (position, subsequent move) pair as (input, output) for our policy network
@@ -90,5 +91,23 @@ def process_sgf_file(filepath):
 
     game_result = root_node.get("RE")
     return positions, game_result
+
+
+def get_data(directory_path):
+    policy_data = []
+    value_data = []
+
+    for filename in os.listdir(directory_path):
+        if filename.endswith(".sgf"):
+            filepath = os.path.join(directory_path, filename)
+            positions, game_result = process_sgf_file(filepath)
+            game_result = 1 if game_result[0] == 'B' else -1
+            for position in positions:
+                feats = extract_features.get_features_from_position(position) # get_features_from_position will be implemented in extract_features.py
+                move = [position['x'], position['y']]
+                policy_data.append((feats, move))
+                value_data.append((feats, game_result))
+
+    return policy_data, value_data
 
 
