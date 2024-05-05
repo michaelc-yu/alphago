@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 from sgfmill import sgf
+import copy
 
 import go
 
@@ -32,7 +33,11 @@ def process_sgf_file(filepath):
 
     positions = []
     position = {}
+    position['recency'] = {}
+    for i in range(1, 9):
+        position['recency'][i] = [[0 for _ in range(board_size)] for _ in range(board_size)]
 
+    last_move = None
     # Iterate through the game moves
     for node in sgf_content.main_sequence_iter():
         move = node.get_move()
@@ -43,13 +48,29 @@ def process_sgf_file(filepath):
         x = 18-x
         player_int = go.BLACK if player == 'b' else go.WHITE
 
-        position['x'] = x
-        position['y'] = y
-        position['to_play'] = player_int
-        position['board'] = game.get_board()
-        position['board_size'] = board_size
+        new_position = copy.deepcopy(position)
+        new_position['x'] = x
+        new_position['y'] = y
+        new_position['to_play'] = player_int
+        new_position['board'] = game.get_board()
+        new_position['board_size'] = board_size
 
-        positions.append(position)
+        if last_move:
+            lx, ly = last_move
+            for i in range(board_size):
+                for j in range(board_size):
+                    if new_position['recency'][7][i][j] == 1:
+                        new_position['recency'][8][i][j] = 1
+            for i in range(7, 1, -1):
+                new_position['recency'][i] = new_position['recency'][i-1]
+
+            new_position['recency'][1] = [[0 for _ in range(board_size)] for _ in range(board_size)]
+            new_position['recency'][1][lx][ly] = 1
+            for i in range(2, 9):
+                new_position['recency'][i][lx][ly] = 0
+
+        positions.append(new_position)
+        position = new_position
 
         print(f"{player} plays at {(x, y)}")
         game.board[x, y] = player_int
@@ -65,6 +86,7 @@ def process_sgf_file(filepath):
                         print(f"board: {game.board}")
                         for gx, gy in group:
                             game.board[gx][gy] = go.EMPTY
+        last_move = (x, y)
 
     game_result = root_node.get("RE")
     return positions, game_result
