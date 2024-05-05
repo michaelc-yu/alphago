@@ -40,3 +40,23 @@ def recent_moves_feature(position): # returns 8 feature channels
     features = np.stack(features, axis=0)
     return features
 
+def num_captures_feature(position): # returns 8 feature channels
+    board_size = position['board_size']
+    color_to_play = position['to_play']
+    feature_map = np.zeros([8, board_size, board_size], dtype=np.int8)
+    board = position['board']
+    dirs = ((-1,0), (1,0), (0,-1), (0,1))
+    for i in range(board_size):
+        for j in range(board_size):
+            if board[i][j] != go.EMPTY:
+                continue
+            for dir in dirs:
+                x, y = i + dir[0], j + dir[1]
+                if 0 <= x < board_size and 0 <= y < board_size:
+                    if board[x][y] == (-1 * color_to_play): # opponent stone
+                        group, liberties = go.get_liberties(x, y, board)
+                        if liberties == 1:
+                            would_capture_index = len(group)-1
+                            feature_map[would_capture_index][i][j] = 1
+    return feature_map
+
