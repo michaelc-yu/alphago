@@ -35,3 +35,8 @@ def liberty_feature(position): # returns 8 feature channels
                 feature_map[liberty_index][stone_x][stone_y] = 1
     return feature_map
 
+def recent_moves_feature(position): # returns 8 feature channels
+    features = [position['recency'][i] for i in range(1, 9)]
+    features = np.stack(features, axis=0)
+    return features
+
