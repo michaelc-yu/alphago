@@ -60,3 +60,14 @@ def num_captures_feature(position): # returns 8 feature channels
                             feature_map[would_capture_index][i][j] = 1
     return feature_map
 
+FEATURE_LIST = [
+    stone_color_feature,
+    ones_feature,
+    liberty_feature,
+    recent_moves_feature,
+    num_captures_feature
+]
+
+def extract_features(position):
+    return np.concatenate([feature_extractor(position) for feature_extractor in FEATURE_LIST], axis=0)
+
