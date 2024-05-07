@@ -68,6 +68,6 @@ FEATURE_LIST = [
     num_captures_feature
 ]
 
-def extract_features(position):
+def get_features_from_position(position):
     return np.concatenate([feature_extractor(position) for feature_extractor in FEATURE_LIST], axis=0)
 

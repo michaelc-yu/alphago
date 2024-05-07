@@ -73,7 +73,7 @@ def process_sgf_file(filepath):
         positions.append(new_position)
         position = new_position
 
-        print(f"{player} plays at {(x, y)}")
+        # print(f"{player} plays at {(x, y)}")
         game.board[x, y] = player_int
 
         for dir in dirs:
@@ -82,9 +82,9 @@ def process_sgf_file(filepath):
                 if game.board[dx][dy] == (-1 * player_int): # opponent stone
                     group, liberties = go.get_liberties(dx, dy, game.board)
                     if liberties == 0:
-                        print("captured group")
-                        print(group)
-                        print(f"board: {game.board}")
+                        # print("captured group")
+                        # print(group)
+                        # print(f"board: {game.board}")
                         for gx, gy in group:
                             game.board[gx][gy] = go.EMPTY
         last_move = (x, y)
@@ -103,7 +103,7 @@ def get_data(directory_path):
             positions, game_result = process_sgf_file(filepath)
             game_result = 1 if game_result[0] == 'B' else -1
             for position in positions:
-                feats = extract_features.get_features_from_position(position) # get_features_from_position will be implemented in extract_features.py
+                feats = extract_features.get_features_from_position(position)
                 move = [position['x'], position['y']]
                 policy_data.append((feats, move))
                 value_data.append((feats, game_result))
