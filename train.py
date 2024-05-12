@@ -6,9 +6,12 @@ import numpy as np
 from torch import optim
 from torch.utils.data import TensorDataset, DataLoader
 
+import go
+import extract_features
 import load_data
 import policy
 import value
+import sys
 import argparse
 
 
@@ -22,6 +25,7 @@ def train_policy(samples = None):
     print(f"Training policy network with {samples} samples")
 
     policyNN = policy.PolicyNetwork(input_channels=28, k=48)
+    # policyNN.load_state_dict(torch.load('policy_network_model.pth'))
 
     feats, moves = zip(*policy_data)
 
@@ -62,6 +66,7 @@ def train_policy(samples = None):
             total_loss += loss.item()
         print(f"Epoch {epoch}, Avg Loss: {total_loss / i}")
 
+    # torch.save(policyNN.state_dict(), 'policy_network_model.pth')
 
 
 
@@ -69,6 +74,7 @@ def train_value(samples = None):
     print(f"Training value network with {samples} samples")
 
     valueNN = value.ValueNetwork(input_channels=28, k=48)
+    # valueNN.load_state_dict(torch.load('value_network_model.pth'))
 
     feats, winners = zip(*value_data)
 
@@ -89,8 +95,9 @@ def train_value(samples = None):
     batch_size = 64
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
-    criterion = nn.MSELoss()
-    optimizer = optim.Adam(valueNN.parameters(), lr=0.001)
+    # criterion = nn.MSELoss()
+    criterion = nn.BCELoss()
+    optimizer = optim.Adam(valueNN.parameters(), lr=0.001, weight_decay=1e-5)
 
     # Training loop
     for epoch in range(20):
@@ -110,6 +117,8 @@ def train_value(samples = None):
             i+=1
             total_loss += loss.item()
         print(f"Epoch {epoch}, Avg Loss: {total_loss / i}")
+
+    # torch.save(valueNN.state_dict(), 'value_network_model.pth')
 
 
 def valid_data_amount(value):
