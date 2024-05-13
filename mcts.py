@@ -47,11 +47,23 @@ class Node():
             logits = policyNN(features_tensor)
             move_probabilities = torch.softmax(logits, dim=1)
 
-        # move = get_next_move(move_probabilities)
-        move = (1, 5) # hardcode for now
+        print(f"type move probabilities: {type(move_probabilities)}")
+        top_k = 5
+        top_moves_indices = torch.topk(move_probabilities, top_k).indices.squeeze().tolist()
+        move_idx = random.choice(top_moves_indices)
+        print(f"move: {index_to_move(move_idx)}")
 
+        while not self.game_state.move_is_legal(index_to_move(move_idx)):
+            top_moves_indices.remove(move_idx)
+            if len(top_moves_indices) == 0:
+                top_k += 5
+                top_moves_indices = top_moves_indices = torch.topk(move_probabilities, top_k).indices.squeeze().tolist()
+            move_idx = random.choice(top_moves_indices)
+
+        move = index_to_move(move_idx)
+        print(f"move: {move}")
         self.game_state.make_move(move)
-
+        print(f"game state to play: {self.game_state.to_play}")
         self.move_history.append(move)
         new_state = copy.deepcopy(self.game_state)
         child_node = Node(new_state, parent=self, move=move)
