@@ -94,7 +94,7 @@ class GoGame():
         for x, y in territories:
             board_[x][y] = territory_color
 
-    def score(self):
+    def get_score(self):
         board_copy = np.copy(self.board)
         for x in range(len(self.board)):
             for y in range(len(self.board)):
@@ -123,7 +123,7 @@ class GoGame():
                 row_format += f"{marker:3}"
             print(row_format)
 
-    def print_board(self, board = None):
+    def print_board(self, board=None):
         board = self.board
         board_size = len(board)
         header = "    "
@@ -142,6 +142,14 @@ class GoGame():
                     marker = '.'
                 row_format += f"{marker} "
             print(row_format)
+
+    def determine_winner(black_score, white_score):
+        if black_score > white_score:
+            return "Black"
+        elif white_score > black_score:
+            return "White"
+        else:
+            return "Draw"
 
 def get_liberties(x, y, board):
     if board[x][y] == EMPTY:
