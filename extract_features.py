@@ -56,7 +56,7 @@ def num_captures_feature(position): # returns 8 feature channels
                     if board[x][y] == (-1 * color_to_play): # opponent stone
                         group, liberties = go.get_liberties(x, y, board)
                         if liberties == 1:
-                            would_capture_index = len(group)-1
+                            would_capture_index = min(len(group)-1, 7)
                             feature_map[would_capture_index][i][j] = 1
     return feature_map
 
