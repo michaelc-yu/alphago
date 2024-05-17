@@ -66,7 +66,7 @@ def train_policy(samples = None):
             total_loss += loss.item()
         print(f"Epoch {epoch}, Avg Loss: {total_loss / i}")
 
-    # torch.save(policyNN.state_dict(), 'policy_network_model.pth')
+    torch.save(policyNN.state_dict(), 'policy_network_model.pth')
 
 
 
@@ -118,7 +118,7 @@ def train_value(samples = None):
             total_loss += loss.item()
         print(f"Epoch {epoch}, Avg Loss: {total_loss / i}")
 
-    # torch.save(valueNN.state_dict(), 'value_network_model.pth')
+    torch.save(valueNN.state_dict(), 'value_network_model.pth')
 
 
 def valid_data_amount(value):
