@@ -1,7 +1,7 @@
 An implementation of DeepMind's AlphaGo. Original paper from Google DeepMind: https://www.nature.com/articles/nature16961
 
 
-1. Start by cloning the git repo and creating a folder named "sgffiles". Download some past professional Go games from https://u-go.net/gamerecords/ and copy those .sgf files in this folder. You can add as many as you like but it might take a long time to train without a GPU. I used 100 SGF files which took about 2-3 hours of training time in total. I would recommend sticking to around 100 or less.
+1. Start by cloning the git repository.
 
 2. Start training. Run train.py like so:
 **python3 train.py --policy --value**
