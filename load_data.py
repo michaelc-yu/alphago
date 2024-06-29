@@ -21,6 +21,8 @@ import extract_features
 # winner: the winner is used as the ground truth label for our value network
 
 
+# Create position information for each move in a sgf file
+# this info will be used to extract features
 def process_sgf_file(filepath):
     with open(filepath, "rb") as file:
         sgf_content = sgf.Sgf_game.from_bytes(file.read())
@@ -82,9 +84,6 @@ def process_sgf_file(filepath):
                 if game.board[dx][dy] == (-1 * player_int): # opponent stone
                     group, liberties = go.get_liberties(dx, dy, game.board)
                     if liberties == 0:
-                        # print("captured group")
-                        # print(group)
-                        # print(f"board: {game.board}")
                         for gx, gy in group:
                             game.board[gx][gy] = go.EMPTY
         last_move = (x, y)
@@ -93,6 +92,8 @@ def process_sgf_file(filepath):
     return positions, game_result
 
 
+# Loop through all the game (.sgf) files and process and extract features from all board positions
+# Create two arrays of tuples (input/output pairs) for training the two networks
 def get_data(directory_path):
     policy_data = []
     value_data = []

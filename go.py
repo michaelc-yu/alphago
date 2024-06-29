@@ -20,10 +20,9 @@ class GoGame():
         self.to_play = to_play
         self.board_size = board_size
 
+    # Make a move by placing a stone on the board if move is valid
     def make_move(self, move):
         x, y = move
-        # print(f"board in make_move: {self.board}")
-        # print(f"move: {move}")
         if self.board[x][y] != 0:
             raise ValueError("Invalid move: position occupied")
         self.board[x][y] = self.to_play
@@ -40,12 +39,14 @@ class GoGame():
         self.to_play = -self.to_play
         return self
 
+    # Undo a move
     def undo_move(self, move):
         x, y = move
         if self.board[x][y] == 0:
             raise ValueError("Cannot undo a move - position is empty")
         self.board[x][y] = 0
 
+    # Check if a move is legal
     def move_is_legal(self, move):
         x, y = move
         if move is None:
@@ -54,6 +55,7 @@ class GoGame():
             return False
         return True
 
+    # Check if a move is a suicide
     def is_suicide(self, move):
         x, y = move
         self.board[x][y] = self.to_play
@@ -69,6 +71,7 @@ class GoGame():
                         return False
         return liberties == 0
 
+    # Find the entire territory belonging to a certain player
     def find_connected(self, start, board_):
         stack = [start]
         connected_empty = set()
@@ -87,6 +90,7 @@ class GoGame():
                         border_colors.add(board_[dx][dy])
         return connected_empty, border_colors
 
+    # Assigns a color to the identified territory based on the surrounding stones
     def assign_territories(self, territories, border_colors, board_):
         territory_color = self.UNKNOWN
         if len(border_colors) == 1:
@@ -94,6 +98,7 @@ class GoGame():
         for x, y in territories:
             board_[x][y] = territory_color
 
+    # Calculates final score
     def get_score(self):
         board_copy = np.copy(self.board)
         for x in range(len(self.board)):
@@ -106,9 +111,11 @@ class GoGame():
         white_score = np.count_nonzero(board_copy == self.WHITE) + self.KOMI
         return (black_score, white_score), board_copy
 
+    # Returns a deep copy of the current board state
     def get_board(self):
         return copy.deepcopy(self.board)
 
+    # Prints the final board state after game is over
     def print_final_board(self, board):
         board_size = len(board)
         header = " "
@@ -123,6 +130,7 @@ class GoGame():
                 row_format += f"{marker:3}"
             print(row_format)
 
+    # Prints the board
     def print_board(self, board=None):
         board = self.board
         board_size = len(board)
@@ -143,6 +151,7 @@ class GoGame():
                 row_format += f"{marker} "
             print(row_format)
 
+    # Determine if black or white won
     def determine_winner(black_score, white_score):
         if black_score > white_score:
             return "Black"
@@ -151,6 +160,7 @@ class GoGame():
         else:
             return "Draw"
 
+# Calculates the number of liberties for a connected group of same color stones
 def get_liberties(x, y, board):
     if board[x][y] == EMPTY:
         return [], -1

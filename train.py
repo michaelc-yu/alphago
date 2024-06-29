@@ -20,7 +20,7 @@ sgffiles = "./sgffiles"
 
 policy_data, value_data = load_data.get_data(sgffiles)
 
-
+# Train the policy network
 def train_policy(samples = None):
     print(f"Training policy network with {samples} samples")
 
@@ -69,7 +69,7 @@ def train_policy(samples = None):
     torch.save(policyNN.state_dict(), 'policy_network_model.pth')
 
 
-
+# Train the value network
 def train_value(samples = None):
     print(f"Training value network with {samples} samples")
 
