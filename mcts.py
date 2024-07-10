@@ -19,6 +19,8 @@ policy_network should influence which nodes to explore during expansion
 value_network replaces traditional rollout simulations
 """
 
+# Create the position info for a current game state
+# this will be used when extracting features for this state
 def create_position_dict(game, last_move):
     board_size = game.board_size
     position = {
@@ -146,7 +148,7 @@ class MCTS():
     def reset_tree(self):
         self.root = Node(copy.deepcopy(self.root_game_state))
 
-
+# Handle user making move
 def user_move(game):
     valid = False
     while not valid:
@@ -162,6 +164,7 @@ def user_move(game):
     return (row, col)
 
 
+# Load the pretrained value and policy networks
 valueNN = value.ValueNetwork(input_channels=28, k=48)
 valueNN.load_state_dict(torch.load('value_network_model.pth'))
 valueNN.eval()
@@ -170,10 +173,13 @@ policyNN = policy.PolicyNetwork(input_channels=28, k=48)
 policyNN.load_state_dict(torch.load('policy_network_model.pth'))
 policyNN.eval()
 
+# Initialize the GoGame class and the Monte Carlo Tree Search class
 game = go.GoGame(board_size=19, to_play=go.GoGame.BLACK)
 mcts = MCTS(root_game_state=game, iterations=50)
 
-for _ in range(250): # game being over is subjective so just cap at 250 for now
+
+# Game runs for 250 moves
+for _ in range(250):
     if game.to_play == go.GoGame.BLACK:
         mcts.tree_search()
         move = mcts.get_best_move()
@@ -187,6 +193,8 @@ for _ in range(250): # game being over is subjective so just cap at 250 for now
         mcts.root_game_state = game
         mcts.reset_tree()
 
+
+# Get the final score and board state
 (black_score, white_score), final_board = game.get_score()
 print("Final board:")
 game.print_final_board(final_board)
